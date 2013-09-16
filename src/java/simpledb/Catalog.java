@@ -16,12 +16,34 @@ import java.util.*;
 
 public class Catalog {
 
+    ArrayList<Table> table_array;
+
+    /**
+     * Table Class
+     *
+     */
+    private class Table {
+        DbFile file;
+        String name;
+        String pkeyField;
+
+        public Table(DbFile file, String name, String pkeyField) {
+            this.file = file;
+            this.name = name;
+            this.pkeyField = pkeyField;
+        }
+
+        public Table(DbFile file, String name) {
+            this(file, name, "");
+        }
+    }
+
     /**
      * Constructor.
      * Creates a new, empty catalog.
      */
     public Catalog() {
-        // some code goes here
+        this.table_array = new ArrayList<Table>();
     }
 
     /**
@@ -34,7 +56,7 @@ public class Catalog {
      * conflict exists, use the last table to be added as the table for a given name.
      */
     public void addTable(DbFile file, String name, String pkeyField) {
-        // some code goes here
+        this.table_array.add(new Table(file, name, pkeyField));
     }
 
     public void addTable(DbFile file, String name) {
@@ -57,8 +79,15 @@ public class Catalog {
      * @throws NoSuchElementException if the table doesn't exist
      */
     public int getTableId(String name) throws NoSuchElementException {
-        // some code goes here
-        return 0;
+        if (name == null)
+            throw new NoSuchElementException("No element found in Catalog with specified Table Name");
+        for (int i = 0; i < table_array.size(); i++) {
+            Table curr_item = table_array.get(i);
+            if(name.equals(curr_item.name)) {
+                return curr_item.file.getId();
+            }
+        }
+        throw new NoSuchElementException("No element found in Catalog with specified Table Name");
     }
 
     /**
@@ -68,8 +97,13 @@ public class Catalog {
      * @throws NoSuchElementException if the table doesn't exist
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
-        // some code goes here
-        return null;
+        for (int i = 0; i < table_array.size(); i++) {
+            Table curr_item = table_array.get(i);
+            if(tableid == (curr_item.file.getId())) {
+                return curr_item.file.getTupleDesc();
+            }
+        }
+        throw new NoSuchElementException("No element found in Catalog with specified Table ID");
     }
 
     /**
@@ -79,28 +113,46 @@ public class Catalog {
      *     function passed to addTable
      */
     public DbFile getDbFile(int tableid) throws NoSuchElementException {
-        // some code goes here
-        return null;
+        for (int i = 0; i < table_array.size(); i++) {
+            Table curr_item = table_array.get(i);
+            if(tableid == (curr_item.file.getId())) {
+                return curr_item.file;
+            }
+        }
+        throw new NoSuchElementException("No element found in Catalog with specified Table ID");
     }
 
     public String getPrimaryKey(int tableid) {
-        // some code goes here
-        return null;
+        for (int i = 0; i < table_array.size(); i++) {
+            Table curr_item = table_array.get(i);
+            if(tableid == (curr_item.file.getId())) {
+                return curr_item.pkeyField;
+            }
+        }
+        throw new NoSuchElementException("No element found in Catalog with specified Table ID");
     }
 
     public Iterator<Integer> tableIdIterator() {
-        // some code goes here
-        return null;
+        ArrayList<Integer> int_array = new ArrayList<Integer>();
+        for (int i = 0; i < table_array.size(); i++) {
+            int_array.add(table_array.get(i).file.getId());
+        }
+        return int_array.iterator();
     }
 
     public String getTableName(int id) {
-        // some code goes here
-        return null;
+        for (int i = 0; i < table_array.size(); i++) {
+            Table curr_item = table_array.get(i);
+            if(id == (curr_item.file.getId())) {
+                return curr_item.name;
+            }
+        }
+        throw new NoSuchElementException("No element found in Catalog with specified Table ID");
     }
     
     /** Delete all tables from the catalog */
     public void clear() {
-        // some code goes here
+        table_array.clear();
     }
     
     /**
@@ -159,3 +211,4 @@ public class Catalog {
     }
 }
 
+    
